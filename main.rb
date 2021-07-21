@@ -85,6 +85,12 @@ def check_for_winner
     return
   end
 
+  if cur_x_arr.length >= 3
+    if board_arr.all? {|x| x.class === "string"}
+      $wins = "Game Draw: Nobody"
+    end
+  end
+
   if $win_board.any? {|arr| (arr - cur_x_arr).empty?}
     if $player_one.char == "X"
       set_winner($player_one.name)

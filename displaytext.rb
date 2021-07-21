@@ -32,7 +32,7 @@ module DisplayText
   end
 
   def winner_winner(player)
-    puts "#{player.capitalize} Wins!\n"
+    puts "#{player} Wins!\n"
   end
 
   def play_again_text
