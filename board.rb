@@ -12,10 +12,17 @@ class GameBoard
   public
 
   def show_board
+    bar = "---+---+---"
+    line_1 = " #{@@newboard[0][0]} | #{@@newboard[0][1]} | #{@@newboard[0][2]}"
+    line_2 = " #{@@newboard[1][0]} | #{@@newboard[1][1]} | #{@@newboard[1][2]}"
+    line_3 = " #{@@newboard[2][0]} | #{@@newboard[2][1]} | #{@@newboard[2][2]}"
+    
     print "\n"
-    pp @@newboard[0]
-    pp @@newboard[1]
-    pp @@newboard[2]
+    puts line_1
+    puts bar
+    puts line_2
+    puts bar
+    puts line_3
     print "\n"
   end
 
