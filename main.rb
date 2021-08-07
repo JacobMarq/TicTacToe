@@ -1,7 +1,7 @@
-require_relative "player"
-require_relative "board"
-require_relative "displaytext"
-require_relative "winningboard"
+require_relative "lib/player"
+require_relative "lib/board"
+require_relative "lib/displaytext"
+require_relative "lib/winningboard"
 
 include DisplayText
 
