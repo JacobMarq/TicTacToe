@@ -1,22 +1,17 @@
 class Player
-  attr_reader :name
-  attr_reader :char
+  attr_accessor :name, :char
   
-  def initialize(name, char, pnumber)
+  def initialize(player_num, name, char)
+    @player_num = player_num
     @name = name
     @char = char
-    @pnumber = pnumber
   end
 
   def show_name
-    puts "\nPlayer #{@pnumber} name: #{@name}"
+    puts "\nPlayer #{@player_num} name: #{@name}"
   end
 
   def show_char
-    puts "Player #{@pnumber} character: #{@char}"
-  end
-
-  def char
-    return @char
+    puts "Player #{@player_num} character: #{@char}"
   end
 end

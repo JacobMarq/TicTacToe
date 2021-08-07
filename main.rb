@@ -1,7 +1,6 @@
 require_relative "lib/player"
 require_relative "lib/board"
 require_relative "lib/displaytext"
-require_relative "lib/winningboard"
 
 include DisplayText
 
@@ -15,57 +14,48 @@ def char_selection
   end
 end
 
-enter_name_one
-p_one_name = gets.chomp.capitalize
-choose_char
-p_one_char = char_selection
-$player_one = Player.new(p_one_name, p_one_char, "1")
-
-enter_name_two
-p_two_name = gets.chomp.capitalize
-if p_one_char == "X"
-  p_two_char = "O"
-else
-  p_two_char = "X" 
-end
-$player_two = Player.new(p_two_name, p_two_char, "2")
-
-$player_one.show_name
-$player_one.show_char
-$player_two.show_name
-$player_two.show_char
-
-def initiate_game
-  $game_board = GameBoard.new($player_one.name, $player_two.name)
-  $game_board.show_board
-  $wins = nil
-  $game_active = true
+def create_player(num, char = nil)
+  if num == 1
+    enter_name_one
+    name = gets.chomp.capitalize
+    choose_char
+    char = char_selection
+  else
+    enter_name_two
+    name = gets.chomp.capitalize
+    if char == "X"
+      char = "O"
+    else
+      char = "X" 
+    end
+  end
+  
+  player = Player.new(num, name, char)
+  return player
 end
 
-def confirm_selection
-  board_arr = $game_board.cur_board
-  board_arr = board_arr.flatten
+def initiate_game(player_one, player_two)
+  new_game = GameBoard.new(player_one, player_two)
+  new_game.show_board
+  return new_game
+end
+
+def confirm_selection(game)
+  board = game.board
+  board = board.flatten
 
   selection = gets.chomp.to_i
 
   if selection < 1 || selection > 9
     error_invalid_sel
     make_new_sel
-    confirm_selection
-  elsif board_arr[selection - 1].class === "string"
+    confirm_selection(game)
+  elsif board[selection - 1].class === "string"
     error_taken
     make_new_sel
-    confirm_selection
+    confirm_selection(game)
   else
     return selection
-  end
-end
-
-def whos_turn(cur)
-  if cur
-    $player_one.char
-  else
-    $player_two.char
   end
 end
 
@@ -73,43 +63,30 @@ def find_indicies(arr, value)
   arr.each_index.select {|index| arr[index] == value}
 end
 
-def check_for_winner
-  board_arr = $game_board.cur_board
-  board_arr = board_arr.flatten
+def check_for_winner(game)
+  board = game.board
+  board = board.flatten
   
-  #{checks the current board for X's or O's at any of the winning sets of inidicies}
-  cur_x_arr = find_indicies(board_arr, "X")
-  cur_o_arr = find_indicies(board_arr, "O")
+  x_locations = find_indicies(board, "X")
+  o_locations = find_indicies(board, "O")
 
-  if cur_o_arr.length < 2 || cur_x_arr.length < 2
+  if o_locations.length < 2 || x_locations.length < 2
     return
   end
 
-  if cur_x_arr.length >= 3
-    if board_arr.all? {|x| x.class === "string"}
-      $wins = "Game Draw: Nobody"
+  if x_locations.length >= 3
+    if board.all? {|x| x.class === "string"}
+      game.winner = "Game Draw: Nobody"
     end
   end
 
-  if $win_board.any? {|arr| (arr - cur_x_arr).empty?}
-    if $player_one.char == "X"
-      set_winner($player_one.name)
-    else
-      set_winner($player_two.name)
-    end
-  elsif $win_board.any? {|arr| (arr - cur_o_arr).empty?}
-    if $player_one.char == "O"
-      set_winner($player_one.name)
-    else
-      set_winner($player_two.name)
-    end
-  else
-    return
+  if game.win_locations.any? {|win_loc| (win_loc - x_locations).empty?}
+    game.set_winner("X")
+  elsif game.win_locations.any? {|win_loc| (win_loc - o_locations).empty?}
+    game.set_winner("O")
   end
-end
 
-def set_winner(player)
-  $wins = player
+  return game.winner
 end
 
 def play_again?
@@ -125,33 +102,42 @@ def play_again?
   end
 end
 
-def end_game
-  winner_winner($wins)
+def end_game(winner)
+  winner_winner(winner)
   play_again_text
   if play_again?
-    initiate_game
-    game_loop
+    new_game = initiate_game(player_one, player_two)
+    game_loop(new_game)
   else
     thank_you
   end
 end
 
-def game_loop
-  while $game_active
-    make_selection($game_board.player_turn)
-    turn_sel = confirm_selection
-    player_turn = whos_turn($game_board.decide_player_turn)
+def game_loop(game)
+  while game.active
+    make_selection(game.player_turn.name)
+    selection = confirm_selection(game)
+    game.decide_player_turn
 
-    $game_board.update_board(turn_sel, player_turn)
-    check_for_winner
-    $game_board.show_board
+    game.update_board(selection)
+    game.show_board
     
-    if $wins != nil
-      $game_active = false
+    if check_for_winner(game) != nil
+      game.active = false
     end
   end
-  end_game
+  end_game(game.winner.name)
 end
 
-initiate_game
-game_loop
+
+
+player_one = create_player(1)
+player_two = create_player(2, player_one.char)
+
+player_one.show_name
+player_one.show_char
+player_two.show_name
+player_two.show_char
+
+current_game = initiate_game(player_one, player_two)
+game_loop(current_game)
