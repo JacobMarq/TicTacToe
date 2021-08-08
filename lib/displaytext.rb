@@ -16,7 +16,7 @@ module DisplayText
   end
 
   def make_selection(player)
-    puts "#{player} enter a selection from the numbers available: "
+    puts "\n#{player} enter a selection from the numbers available: "
   end
 
   def error_taken
@@ -32,7 +32,7 @@ module DisplayText
   end
 
   def winner_winner(player)
-    puts "#{player} Wins!\n"
+    puts "\n#{player} Wins!\n"
   end
 
   def play_again_text
